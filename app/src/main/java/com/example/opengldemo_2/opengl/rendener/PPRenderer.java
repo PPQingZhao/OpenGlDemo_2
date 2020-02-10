@@ -15,7 +15,6 @@ import com.example.opengldemo_2.opengl.util.ShaderUtil;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -96,6 +95,7 @@ public class PPRenderer implements GLSurfaceView.Renderer {
             Log.e(TAG, "create program failed.");
             return;
         }
+
         // 激活渲染程序
         GLES20.glUseProgram(mProgram);
         // 获取属性
@@ -106,7 +106,10 @@ public class PPRenderer implements GLSurfaceView.Renderer {
         // 设置纹理层
         GLES20.glUniform1i(sTexture, 0);
 
-        setupShaderAttrib();
+//        setupShaderAttrib();
+
+        setupVBOBuffer();
+        setupShaderAttribByVBO();
 
         GLES20.glGenTextures(textureIds.length, textureIds, 0);
 
@@ -123,6 +126,33 @@ public class PPRenderer implements GLSurfaceView.Renderer {
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 
+    }
+
+    int[] vbos = new int[1];
+
+    private void setupVBOBuffer() {
+        // 创建vbo
+        GLES20.glGenBuffers(vbos.length, vbos, 0);
+        // 绑定
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbos[0]);
+        // vbo分配内存空间
+        GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, getVertexData().length * 4 + getFragmentData().length * 4, null, GLES20.GL_STATIC_DRAW);
+        // 顶点vbo 内存赋值
+        GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, 0, getVertexData().length * 4, vertexBuffer);
+        // 片元 vbo 内存赋值
+        GLES20.glBufferSubData(GLES20.GL_ARRAY_BUFFER, getVertexData().length * 4, getFragmentData().length * 4, fragmentBuffer);
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+    }
+
+    private void setupShaderAttribByVBO() {
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbos[0]);
+        // 顶点
+        GLES20.glEnableVertexAttribArray(vPosition);
+        GLES20.glVertexAttribPointer(vPosition, 2, GLES20.GL_FLOAT, false, 8, 0);
+        // 片元
+        GLES20.glEnableVertexAttribArray(fPosition);
+        GLES20.glVertexAttribPointer(fPosition, 2, GLES20.GL_FLOAT, false, 8, getVertexData().length * 4);
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
     }
 
     private void setupShaderAttrib() {
@@ -145,12 +175,16 @@ public class PPRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glClearColor(1f, 0f, 0f, 1f);
 
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbos[0]);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIds[0]);
+
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + 0);
         // 更新渲染数据 替换文理内容
         GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, getBitmap());
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
     }
 
     private Bitmap bitmap;
