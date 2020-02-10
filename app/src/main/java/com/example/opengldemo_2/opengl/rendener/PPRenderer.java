@@ -103,15 +103,10 @@ public class PPRenderer implements GLSurfaceView.Renderer {
         fPosition = GLES20.glGetAttribLocation(mProgram, "f_Position");
         sTexture = GLES20.glGetUniformLocation(mProgram, "sTexture");
 
-        // 使顶点变量有效
-        GLES20.glEnableVertexAttribArray(vPosition);
-        // 传递顶点数据
-        GLES20.glVertexAttribPointer(vPosition, 2, GLES20.GL_FLOAT, false, 8, vertexBuffer);
-
-        GLES20.glEnableVertexAttribArray(fPosition);
-        GLES20.glVertexAttribPointer(fPosition, 2, GLES20.GL_FLOAT, false, 8, fragmentBuffer);
         // 设置纹理层
         GLES20.glUniform1i(sTexture, 0);
+
+        setupShaderAttrib();
 
         GLES20.glGenTextures(textureIds.length, textureIds, 0);
 
@@ -128,6 +123,16 @@ public class PPRenderer implements GLSurfaceView.Renderer {
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 
+    }
+
+    private void setupShaderAttrib() {
+        // 使顶点变量有效
+        GLES20.glEnableVertexAttribArray(vPosition);
+        // 传递顶点数据
+        GLES20.glVertexAttribPointer(vPosition, 2, GLES20.GL_FLOAT, false, 8, vertexBuffer);
+
+        GLES20.glEnableVertexAttribArray(fPosition);
+        GLES20.glVertexAttribPointer(fPosition, 2, GLES20.GL_FLOAT, false, 8, fragmentBuffer);
     }
 
     @Override
