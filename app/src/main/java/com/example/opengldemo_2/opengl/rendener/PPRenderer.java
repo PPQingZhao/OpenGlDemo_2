@@ -81,7 +81,8 @@ public class PPRenderer implements GLSurfaceView.Renderer {
         };
     }
 
-    int[] textureIds = new int[1];
+    int[] fboTextureIds = new int[1];
+    int[] imgTextureIds = new int[1];
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -111,8 +112,22 @@ public class PPRenderer implements GLSurfaceView.Renderer {
         setupVBOBuffer();
         setupShaderAttribByVBO();
 
-        GLES20.glGenTextures(textureIds.length, textureIds, 0);
+        initFBO();
 
+        createTextureId(fboTextureIds);
+
+        createTextureId(imgTextureIds);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, imgTextureIds[0]);
+        Bitmap bitmap = getBitmap();
+        int internalformat = GLUtils.getInternalFormat(bitmap);
+
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, internalformat, bitmap.getWidth(), bitmap.getHeight(), 0, internalformat, GLES20.GL_UNSIGNED_BYTE, null);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+
+    }
+
+    void createTextureId(int[] textureIds) {
+        GLES20.glGenTextures(textureIds.length, textureIds, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIds[0]);
         // 设置环绕方式
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_REPEAT);
@@ -120,12 +135,26 @@ public class PPRenderer implements GLSurfaceView.Renderer {
         // 设置过滤器
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+    }
+
+    private void initFBO() {
+        GLES20.glGenFramebuffers(fbos.length, fbos, 0);
+    }
+
+    int[] fbos = new int[1];
+
+    private void setupFBO(int fboTextureId, int width, int height) {
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fbos[0]);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fboTextureId);
         Bitmap bitmap = getBitmap();
         int internalformat = GLUtils.getInternalFormat(bitmap);
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, internalformat, bitmap.getWidth(), bitmap.getHeight(), 0, internalformat, GLES20.GL_UNSIGNED_BYTE, null);
+        // 设置fbo 大小
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, internalformat, width, height, 0, internalformat, GLES20.GL_UNSIGNED_BYTE, null);
+        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, fboTextureId, 0);
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
     int[] vbos = new int[1];
@@ -168,23 +197,41 @@ public class PPRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
+        setupFBO(fboTextureIds[0], width, height);
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
+
+        fboDraw();
+        glTextureDraw(fboTextureIds);
+    }
+
+    private void fboDraw() {
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fbos[0]);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         GLES20.glClearColor(1f, 0f, 0f, 1f);
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vbos[0]);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIds[0]);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, imgTextureIds[0]);
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + 0);
         // 更新渲染数据 替换文理内容
         GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, getBitmap());
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
 
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+    }
+
+    private void glTextureDraw(int[] textureIds) {
+        for (int textureId : textureIds) {
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId);
+//            更新渲染数据
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        }
     }
 
     private Bitmap bitmap;

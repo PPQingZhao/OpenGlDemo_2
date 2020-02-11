@@ -16,6 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".ui.OpenGLActivity" />
+        <activity android:name=".ui.OpenGL2Activity" />
+        <activity android:name=".ui.VBOOpenGLActivity" />
+        <activity android:name=".ui.FBOOpenGLActivity" />
     </application>
 
 </manifest>
