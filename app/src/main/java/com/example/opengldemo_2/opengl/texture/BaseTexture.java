@@ -16,8 +16,8 @@ public abstract class BaseTexture {
     private final FloatBuffer fragmentBuffer;
     protected int textureCount = 1;
     private int[] textureIds = new int[textureCount];
-    private int windowWidth;
-    private int windowHeight;
+    protected int windowWidth;
+    protected int windowHeight;
 
     public BaseTexture() {
         vertexBuffer = ByteBuffer.allocateDirect(getVertexData().length * 4)
@@ -64,6 +64,13 @@ public abstract class BaseTexture {
             1f, 0f
     };
 
+    private float[] matrix = new float[]{
+            1f, 0f, 0f, 0f,
+            0f, 1f, 0f, 0f,
+            0f, 0f, 1f, 0f,
+            0f, 0f, 0f, 1f,
+    };
+
     /**
      * 获取片元坐标
      *
@@ -84,6 +91,10 @@ public abstract class BaseTexture {
             mProgram = new GLProgram();
         }
         return mProgram;
+    }
+
+    public float[] getMatrix() {
+        return matrix;
     }
 
     public void init(String sourceVertex, String sourceFragment) {
@@ -126,8 +137,8 @@ public abstract class BaseTexture {
     }
 
     public void viewPort(int x, int y, int width, int height) {
-        this.windowWidth = width;
-        this.windowHeight = height;
+        this.windowWidth = width - x;
+        this.windowHeight = height - y;
         GLES20.glViewport(x, y, width, height);
     }
 
@@ -146,9 +157,9 @@ public abstract class BaseTexture {
         return textureIds;
     }
 
-    protected void setupTextureSize(int texId, int width, int height, int internalFormat) {
+    protected void setupTextureSize(int texId, int bintmapWidth, int bitmapHeight, int internalFormat) {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texId);
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, internalFormat, width, height, 0, internalFormat, GLES20.GL_UNSIGNED_BYTE, null);
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, internalFormat, bintmapWidth, bitmapHeight, 0, internalFormat, GLES20.GL_UNSIGNED_BYTE, null);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
@@ -168,6 +179,7 @@ public abstract class BaseTexture {
         for (int i = 0; i < textureIds.length; i++) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIds[i]);
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
+            GLES20.glUniformMatrix4fv(texture.getGLProgram().getUMatrix(), 1, false, texture.getMatrix(), 0);
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         }

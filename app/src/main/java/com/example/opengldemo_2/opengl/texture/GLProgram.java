@@ -13,6 +13,7 @@ public class GLProgram {
     private int vPosition;
     private int fPosition;
     private int sTexture;
+    private int uMatrix;
 
     public boolean isInitSuccess() {
         return initSuccess;
@@ -28,6 +29,10 @@ public class GLProgram {
 
     protected String getSTextureCode() {
         return "sTexture";
+    }
+
+    protected String getUMatrixCode() {
+        return "u_Matrix";
     }
 
     /**
@@ -51,6 +56,7 @@ public class GLProgram {
         vPosition = GLES20.glGetAttribLocation(program, getVPositionCode());
         fPosition = GLES20.glGetAttribLocation(program, getFPositionCode());
         sTexture = GLES20.glGetUniformLocation(program, getSTextureCode());
+        uMatrix = GLES20.glGetUniformLocation(program, getUMatrixCode());
     }
 
     public int getVPosition() {
@@ -63,6 +69,10 @@ public class GLProgram {
 
     public int getSTexture() {
         return sTexture;
+    }
+
+    public int getUMatrix() {
+        return uMatrix;
     }
 
     public int getProgram() {

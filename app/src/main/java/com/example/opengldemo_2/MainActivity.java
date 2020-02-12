@@ -11,6 +11,7 @@ import com.example.opengldemo_2.ui.FBOOpenGLActivity;
 import com.example.opengldemo_2.ui.OpenGL2Activity;
 import com.example.opengldemo_2.ui.OpenGLActivity;
 import com.example.opengldemo_2.ui.VBOOpenGLActivity;
+import com.example.opengldemo_2.ui.ZhenjiaoOpenGLActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,5 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void onFBOOpenGL(View v) {
         startActivity(new Intent(getApplicationContext(), FBOOpenGLActivity.class));
+    }
+
+    public void onZhenJiaoOpenGL(View v) {
+        startActivity(new Intent(getApplicationContext(), ZhenjiaoOpenGLActivity.class));
     }
 }

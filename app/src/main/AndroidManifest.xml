@@ -21,6 +21,7 @@
         <activity android:name=".ui.OpenGL2Activity" />
         <activity android:name=".ui.VBOOpenGLActivity" />
         <activity android:name=".ui.FBOOpenGLActivity" />
+        <activity android:name=".ui.ZhenjiaoOpenGLActivity" />
     </application>
 
 </manifest>
