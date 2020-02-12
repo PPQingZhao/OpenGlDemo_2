@@ -26,7 +26,7 @@ public class FBOGlSurfaceView extends GLSurfaceView {
     private FBORenderer getRenderer() {
         if (null == mRenderer) {
             mRenderer = new FBORenderer(getContext(),
-                    FileUtil.getRawSource(getContext(), R.raw.shader_vertex),
+                    FileUtil.getRawSource(getContext(), R.raw.shader_vertex_matrix),
                     FileUtil.getRawSource(getContext(), R.raw.shader_fragment));
         }
         return mRenderer;

@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.util.Log;
 
-public class FBOTexture extends VBOTexture {
+public class FBOTexture extends ZhenJiaoTexture {
     private final static String TAG = "FBOTexture";
     private final int[] fbos = new int[1];
 
@@ -63,6 +63,7 @@ public class FBOTexture extends VBOTexture {
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, imgTextures[0]);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glUniformMatrix4fv(getGLProgram().getUMatrix(), 1, false, getMatrix(), 0);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 

@@ -26,7 +26,7 @@ public class ZhenJiaoGlSurfaceView extends GLSurfaceView {
     private ZhenJiaoVBORenderer getRenderer() {
         if (null == mRenderer) {
             mRenderer = new ZhenJiaoVBORenderer(getContext(),
-                    FileUtil.getRawSource(getContext(), R.raw.shader_vertex),
+                    FileUtil.getRawSource(getContext(), R.raw.shader_vertex_matrix),
                     FileUtil.getRawSource(getContext(), R.raw.shader_fragment));
         }
         return mRenderer;

@@ -26,7 +26,7 @@ public class PPGlSurfaceView2 extends GLSurfaceView {
     private PPRenderer2 getRenderer() {
         if (null == mRenderer) {
             mRenderer = new PPRenderer2(getContext(),
-                    FileUtil.getRawSource(getContext(), R.raw.shader_vertex),
+                    FileUtil.getRawSource(getContext(), R.raw.shader_vertex_matrix),
                     FileUtil.getRawSource(getContext(), R.raw.shader_fragment));
         }
         return mRenderer;

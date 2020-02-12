@@ -26,7 +26,7 @@ public class VBOGlSurfaceView extends GLSurfaceView {
     private VBORenderer getRenderer() {
         if (null == mRenderer) {
             mRenderer = new VBORenderer(getContext(),
-                    FileUtil.getRawSource(getContext(), R.raw.shader_vertex),
+                    FileUtil.getRawSource(getContext(), R.raw.shader_vertex_matrix),
                     FileUtil.getRawSource(getContext(), R.raw.shader_fragment));
         }
         return mRenderer;
