@@ -3,6 +3,7 @@ package com.example.opengldemo_2.opengl.texture;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -142,24 +143,33 @@ public abstract class BaseTexture {
         GLES20.glViewport(x, y, width, height);
     }
 
-    int lastTexWidth;
-    int lastTexHeight;
+    public int getWindowWidth() {
+        return windowWidth;
+    }
+
+    public int getWindowHeight() {
+        return windowHeight;
+    }
+
+    int lastTextureWidth;
+    int lastTextureHeight;
 
     public int[] drawBitmap(Bitmap bitmap) {
         for (int i = 0; i < textureIds.length; i++) {
-            if (lastTexWidth != bitmap.getWidth() || lastTexHeight != bitmap.getHeight()) {
+            if (lastTextureWidth != bitmap.getWidth() || lastTextureHeight != bitmap.getHeight()) {
                 setupTextureSize(textureIds[0], bitmap.getWidth(), bitmap.getHeight(), GLUtils.getInternalFormat(bitmap));
-                lastTexWidth = bitmap.getWidth();
-                lastTexHeight = bitmap.getHeight();
+                setupMatrix(bitmap.getWidth(),bitmap.getHeight());
+                lastTextureWidth = bitmap.getWidth();
+                lastTextureHeight = bitmap.getHeight();
             }
             drawBitmap(textureIds[i], i, bitmap);
         }
         return textureIds;
     }
 
-    protected void setupTextureSize(int texId, int bintmapWidth, int bitmapHeight, int internalFormat) {
+    protected void setupTextureSize(int texId, int bitmapWidth, int bitmapHeight, int internalFormat) {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texId);
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, internalFormat, bintmapWidth, bitmapHeight, 0, internalFormat, GLES20.GL_UNSIGNED_BYTE, null);
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, internalFormat, bitmapWidth, bitmapHeight, 0, internalFormat, GLES20.GL_UNSIGNED_BYTE, null);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
     }
 
@@ -178,10 +188,17 @@ public abstract class BaseTexture {
         texture.setupShaderAttrib();
         for (int i = 0; i < textureIds.length; i++) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureIds[i]);
+            // 纹理清屏
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+            GLES20.glClearColor(1f, 0f, 0f, 1f);
+
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + i);
             GLES20.glUniformMatrix4fv(texture.getGLProgram().getUMatrix(), 1, false, texture.getMatrix(), 0);
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         }
+    }
+
+    protected void setupMatrix(int textureWidth,int textureHeight) {
     }
 }

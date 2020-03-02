@@ -1,30 +1,36 @@
 package com.example.opengldemo_2.opengl.rendener;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.opengl.GLES20;
-import android.opengl.GLSurfaceView;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.example.opengldemo_2.R;
-import com.example.opengldemo_2.opengl.texture.FBOTexture;
+import com.example.opengldemo_2.opengl.OpenGLSurfaceView;
 import com.example.opengldemo_2.opengl.texture.ZhenJiaoTexture;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class ZhenJiaoVBORenderer implements GLSurfaceView.Renderer {
+public class MultiRenderer implements OpenGLSurfaceView.Renderer {
     private static final String TAG = "PPRenderer";
     private final Context mContext;
     private String sourceVertex;
     private String sourceFragment;
     private ZhenJiaoTexture zhenJiaoTexture;
+    private int[] textures;
+    private int textureWidth;
+    private int textureHeight;
 
-    public ZhenJiaoVBORenderer(Context context, String sourceVertex, String sourceFragment) {
+    public MultiRenderer(Context context, String sourceVertex, String sourceFragment) {
         this.mContext = context;
         this.sourceVertex = sourceVertex;
+        this.sourceFragment = sourceFragment;
+    }
+
+    public void setSourceVertex(String sourceVertex) {
+        this.sourceVertex = sourceVertex;
+    }
+
+    public void setSourceFragment(String sourceFragment) {
         this.sourceFragment = sourceFragment;
     }
 
@@ -33,6 +39,15 @@ public class ZhenJiaoVBORenderer implements GLSurfaceView.Renderer {
             zhenJiaoTexture = new ZhenJiaoTexture();
         }
         return zhenJiaoTexture;
+    }
+
+    public void setTexture(int[] texture) {
+        this.textures = texture;
+    }
+
+    public void setTextureSize(int textureWidth,int textureHeight){
+        this.textureWidth = textureWidth;
+        this.textureHeight = textureHeight;
     }
 
     @Override
@@ -51,18 +66,9 @@ public class ZhenJiaoVBORenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        GLES20.glClearColor(1f, 0f, 0f, 1f);
-        int[] texIds = getZhenJiaoTexture().drawBitmap(getBitmap());
-        getZhenJiaoTexture().drawTextures(getZhenJiaoTexture(), texIds);
-    }
-
-    private Bitmap bitmap;
-
-    private Bitmap getBitmap() {
-        if (null == bitmap) {
-            bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.androids);
+        if (null != textures) {
+            getZhenJiaoTexture().setupMatrix(textureWidth,textureHeight);
+            getZhenJiaoTexture().drawTextures(getZhenJiaoTexture(), textures);
         }
-        return bitmap;
     }
 }

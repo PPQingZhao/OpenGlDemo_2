@@ -2,6 +2,7 @@ package com.example.opengldemo_2.opengl.texture;
 
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 import android.util.Log;
 
 public class FBOTexture extends ZhenJiaoTexture {
@@ -20,13 +21,24 @@ public class FBOTexture extends ZhenJiaoTexture {
     }
 
     @Override
+    public void setupMatrix(int textureWidth, int textureHeight) {
+        super.setupMatrix(textureWidth, textureHeight);
+        // x轴旋转 180度
+        Matrix.rotateM(getMatrix(), 0, 180, 1, 0, 0);
+//        // z轴旋转 180度
+//        Matrix.rotateM(getMatrix(), 0, 180, 0, 0, 1);
+    }
+
+    @Override
     protected float[] getFragmentData() {
-        return new float[]{
-                0f, 0f,
-                1f, 0f,
-                0f, 1f,
-                1f, 1f
-        };
+        return super.getFragmentData();
+        // 这里注释纹理坐标,通过矩阵旋转调整图片
+//        return new float[]{
+//                0f, 0f,
+//                1f, 0f,
+//                0f, 1f,
+//                1f, 1f
+//        };
     }
 
     @Override
@@ -56,12 +68,15 @@ public class FBOTexture extends ZhenJiaoTexture {
     @Override
     public int[] drawBitmap(Bitmap bitmap) {
         int[] imgTextures = super.drawBitmap(bitmap);
+
         GLES20.glUseProgram(getGLProgram().getProgram());
         setupShaderAttrib();
-
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fbos[0]);
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, imgTextures[0]);
+        // 纹理清屏
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        GLES20.glClearColor(1f, 0f, 0f, 1f);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glUniformMatrix4fv(getGLProgram().getUMatrix(), 1, false, getMatrix(), 0);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
@@ -69,6 +84,10 @@ public class FBOTexture extends ZhenJiaoTexture {
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 
+        return fboTextureIds;
+    }
+
+    public int[] getFboTextureIds() {
         return fboTextureIds;
     }
 }

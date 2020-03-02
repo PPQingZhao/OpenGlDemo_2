@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.opengldemo_2.opengl.PPGlSurfaceView;
 import com.example.opengldemo_2.ui.FBOOpenGLActivity;
+import com.example.opengldemo_2.ui.MultiSurfaceActivity;
+import com.example.opengldemo_2.ui.MultiTextureActivity;
 import com.example.opengldemo_2.ui.OpenGL2Activity;
 import com.example.opengldemo_2.ui.OpenGLActivity;
 import com.example.opengldemo_2.ui.VBOOpenGLActivity;
@@ -40,5 +42,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void onZhenJiaoOpenGL(View v) {
         startActivity(new Intent(getApplicationContext(), ZhenjiaoOpenGLActivity.class));
+    }
+
+    public void onMultiSurface(View v) {
+        startActivity(new Intent(getApplicationContext(), MultiSurfaceActivity.class));
+    }
+
+    public void onMultiTexture(View view) {
+        startActivity(new Intent(getApplication(), MultiTextureActivity.class));
     }
 }

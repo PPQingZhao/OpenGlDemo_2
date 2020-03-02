@@ -64,9 +64,35 @@
         android:onClick="onZhenJiaoOpenGL"
         android:text="正交投影 opengl"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_opengl_multisurface"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_opengl_fbo"
+        app:layout_constraintWidth_percent="0.8" />
+
+    <Button
+        android:id="@+id/btn_opengl_multisurface"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:onClick="onMultiSurface"
+        android:text="多surface渲染单纹理"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toTopOf="@id/btn_opengl_multitexture"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_opengl_zhenjiao"
+        app:layout_constraintWidth_percent="0.8" />
+
+    <Button
+        android:id="@+id/btn_opengl_multitexture"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:onClick="onMultiTexture"
+        android:text="单surface渲染多纹理"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_opengl_multisurface"
         app:layout_constraintWidth_percent="0.8" />
 </androidx.constraintlayout.widget.ConstraintLayout>

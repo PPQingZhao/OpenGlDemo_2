@@ -9,20 +9,22 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.opengldemo_2.R;
+import com.example.opengldemo_2.opengl.OpenGLSurfaceView;
 import com.example.opengldemo_2.opengl.texture.BaseTexture;
 import com.example.opengldemo_2.opengl.texture.FBOTexture;
 import com.example.opengldemo_2.opengl.texture.VBOTexture;
+import com.example.opengldemo_2.opengl.texture.ZhenJiaoTexture;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class FBORenderer implements GLSurfaceView.Renderer {
+public class FBORenderer implements OpenGLSurfaceView.Renderer {
     private static final String TAG = "PPRenderer";
     private final Context mContext;
     private String sourceVertex;
     private String sourceFragment;
     private FBOTexture fboTexture;
-    private BaseTexture texture;
+    private VBOTexture texture;
 
     public FBORenderer(Context context, String sourceVertex, String sourceFragment) {
         this.mContext = context;
@@ -30,11 +32,26 @@ public class FBORenderer implements GLSurfaceView.Renderer {
         this.sourceFragment = sourceFragment;
     }
 
-    private FBOTexture getFBOTexture() {
+    public FBOTexture getFBOTexture() {
         if (null == fboTexture) {
             fboTexture = new FBOTexture();
+            if (null != onFBOTextureListener) {
+                onFBOTextureListener.onCreate(fboTexture);
+            }
         }
         return fboTexture;
+    }
+
+    public int[] getTexIds() {
+        return getFBOTexture().drawBitmap(getBitmap());
+    }
+
+    public void setSourceVertex(String sourceVertex) {
+        this.sourceVertex = sourceVertex;
+    }
+
+    public void setSourceFragment(String sourceFragment) {
+        this.sourceFragment = sourceFragment;
     }
 
     @Override
@@ -45,7 +62,7 @@ public class FBORenderer implements GLSurfaceView.Renderer {
         }
         getFBOTexture().init(sourceVertex, sourceFragment);
         texture = new VBOTexture();
-        texture.init(sourceVertex,sourceFragment);
+        texture.init(sourceVertex, sourceFragment);
     }
 
     @Override
@@ -56,18 +73,25 @@ public class FBORenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-        GLES20.glClearColor(1f, 0f, 0f, 1f);
-        int[] texIds = getFBOTexture().drawBitmap(getBitmap());
-        BaseTexture.drawTextures(texture, texIds);
+        BaseTexture.drawTextures(texture, getTexIds());
     }
 
     private Bitmap bitmap;
 
-    private Bitmap getBitmap() {
+    public Bitmap getBitmap() {
         if (null == bitmap) {
             bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.androids);
         }
         return bitmap;
+    }
+
+    private OnFBOTextureListener onFBOTextureListener;
+
+    public void setOnFBOTextureListener(OnFBOTextureListener onFBOTextureListener) {
+        this.onFBOTextureListener = onFBOTextureListener;
+    }
+
+    public interface OnFBOTextureListener {
+        void onCreate(FBOTexture fboTexture);
     }
 }

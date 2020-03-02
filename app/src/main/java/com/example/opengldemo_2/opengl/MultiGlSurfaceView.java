@@ -6,26 +6,29 @@ import android.util.AttributeSet;
 
 import com.example.opengldemo_2.R;
 import com.example.opengldemo_2.opengl.rendener.FBORenderer;
-import com.example.opengldemo_2.opengl.rendener.VBORenderer;
+import com.example.opengldemo_2.opengl.rendener.MultiRenderer;
 import com.example.opengldemo_2.opengl.util.FileUtil;
 
-public class FBOGlSurfaceView extends OpenGLSurfaceView {
+public class MultiGlSurfaceView extends OpenGLSurfaceView {
 
-    private FBORenderer mRenderer;
+    private MultiRenderer mRenderer;
 
-    public FBOGlSurfaceView(Context context) {
+    public MultiGlSurfaceView(Context context) {
         this(context, null);
     }
 
-    public FBOGlSurfaceView(Context context, AttributeSet attrs) {
+    public MultiGlSurfaceView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setEGLContextClientVersion(2);
+    }
+
+    public void setRender(){
         setRenderer(getRenderer());
     }
 
-    public FBORenderer getRenderer() {
+    public MultiRenderer getRenderer() {
         if (null == mRenderer) {
-            mRenderer = new FBORenderer(getContext(),
+            mRenderer = new MultiRenderer(getContext(),
                     FileUtil.getRawSource(getContext(), R.raw.shader_vertex_matrix),
                     FileUtil.getRawSource(getContext(), R.raw.shader_fragment));
         }
